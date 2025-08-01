@@ -4,14 +4,19 @@
 
     // Configuration
     const CONFIG = {
-        PARTICLE_COUNT: 100,
-        PARTICLE_SPEED: 0.5,
+        PARTICLE_COUNT: 150,
+        PARTICLE_SPEED: 0.3,
         CONTRACT_ADDRESS: "0x1234567890abcdef1234567890abcdef12345678",
         ANIMATION_DELAY: {
             TITLE: 0,
             SUBTITLE: 300,
             BUTTONS: 500,
             SOCIAL: 700
+        },
+        STAR_TYPES: {
+            REGULAR: 0.7,  // 70% regular stars
+            LARGE: 0.2,    // 20% large stars  
+            BRIGHT: 0.1    // 10% bright stars
         }
     };
 
@@ -49,30 +54,42 @@
 
         createParticle() {
             const { width, height } = getViewportDimensions();
+            const starType = this.getRandomStarType();
+            
             return {
                 x: random(0, width),
                 y: random(0, height),
                 vx: random(-CONFIG.PARTICLE_SPEED, CONFIG.PARTICLE_SPEED),
                 vy: random(-CONFIG.PARTICLE_SPEED, CONFIG.PARTICLE_SPEED),
-                opacity: random(0.2, 0.7),
-                element: null
+                opacity: random(0.3, 0.9),
+                element: null,
+                starType: starType
             };
+        }
+
+        getRandomStarType() {
+            const rand = Math.random();
+            if (rand < CONFIG.STAR_TYPES.BRIGHT) return 'bright';
+            if (rand < CONFIG.STAR_TYPES.BRIGHT + CONFIG.STAR_TYPES.LARGE) return 'large';
+            return 'regular';
         }
 
         initializeParticles() {
             // Clear existing particles
             this.clearParticles();
             
-            // Create new particles
+            // Create new particles with different star types
             for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
                 const particle = this.createParticle();
                 
-                // Create DOM element
-                particle.element = createElement('div', 'particle', {
+                // Create DOM element with star type class
+                const className = particle.starType === 'regular' ? 'particle' : `particle ${particle.starType}`;
+                
+                particle.element = createElement('div', className, {
                     left: `${particle.x}px`,
                     top: `${particle.y}px`,
                     opacity: particle.opacity,
-                    animationDelay: `${i * 0.1}s`
+                    animationDelay: `${i * 0.05}s`
                 });
 
                 this.container.appendChild(particle.element);
@@ -508,3 +525,12 @@
 
     // Add some fun console messages
     console.log(`
+    🌌 BASENUS - The Future of DeFi on Base 🌌
+    
+    Welcome to the source code!
+    Built with ❤️ for the Base ecosystem
+    
+    Contract: ${CONFIG.CONTRACT_ADDRESS}
+    `);
+
+})();
